@@ -1,16 +1,19 @@
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+
+function getPhotos() {
+  function importAll(r) {
+    return r.keys().map(r);
+  }
+  return importAll(require.context('./photos', false, /\.(png|jpe?g|svg|webp)$/));
+}
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  function importAll(r) {
-    return r.keys().map(r);
-  }
+  const photoFiles = getPhotos();
   
-  const photoFiles = importAll(require.context('./photos', false, /\.(png|jpe?g|svg|webp)$/));
-  
-  const handleKeyDown = (event) => {
+  const handleKeyDown = useCallback((event) => {
     if (event.key === 'ArrowLeft') {
       if (currentIndex > 0) {
         setCurrentIndex((currentIndex - 1));
@@ -20,14 +23,14 @@ function App() {
         setCurrentIndex((currentIndex + 1));
       }
     }
-  }
+  }, [currentIndex, photoFiles.length]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [currentIndex]);
+  }, [currentIndex, handleKeyDown]);
   
   return (
     <div className="App">
@@ -37,10 +40,11 @@ function App() {
           <div className="card">
             <img src={photoFiles[currentIndex]} alt="Missing"></img>
             <div className="container">
-              <h2>Jane Doe</h2>
-              <p className="title">CEO &amp; Founder</p>
-              <p>Some text that describes me lorem ipsum ipsum lorem.</p>
-              <p>example@example.com</p>
+              <h2>Kyoto</h2>
+              <p className="title">The Beginning of the Philosophers Path</p>
+              <p>Taken at the golden hours after walking the Philosopher's Path and missing temple hours. Remember if you want to go to the Higashiyama Jisho-ji and Ginkaku
+               temples at the end of the Philosopher's Path, they close early.</p>
+              <p>Google Maps: 35.01539920647518, 135.79562136190805</p>
             </div>
           </div>
         </div>
